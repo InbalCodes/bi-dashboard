@@ -59,7 +59,7 @@ export default function AnalyzePanel({ queryString }: { queryString: string }) {
         <div className="space-y-6">
           <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
             <h2 className="text-sm font-medium text-slate-500 mb-2">סיכום ביצועים ניהולי</h2>
-            <p className="text-sm leading-relaxed">{result.summary}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{result.summary}</p>
           </section>
 
           <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">

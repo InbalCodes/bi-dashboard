@@ -38,8 +38,8 @@ export default function FilterBar({ options }: { options: FilterOptions }) {
   const hasActiveFilters = Array.from(searchParams.keys()).length > 0;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-6 flex flex-wrap items-end gap-3">
-      <div>
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-6 flex flex-nowrap items-end gap-3 overflow-x-auto">
+      <div className="shrink-0">
         <label className="block text-xs text-slate-500 mb-1">מתאריך</label>
         <input
           type="date"

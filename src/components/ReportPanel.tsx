@@ -191,7 +191,7 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
 
           <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
             <h3 className="text-sm font-medium text-slate-500 mb-2">סיכום ביצועים</h3>
-            <p className="text-sm leading-relaxed">{report.summary}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{report.summary}</p>
           </section>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -119,7 +119,11 @@ export function isValidAskResult(value: unknown): value is AskResult {
 export const ASK_SCHEMA: Anthropic.Tool.InputSchema = {
   type: "object",
   properties: {
-    answer: { type: "string", description: "תשובה ברורה וממוקדת לשאלת המשתמש, בעברית" },
+    answer: {
+      type: "string",
+      description:
+        "תשובה ברורה וממוקדת לשאלת המשתמש, בעברית. אם התשובה כוללת יותר מנקודה אחת (למשל רשימת סיבות, המלצות, או השוואה בין כמה קמפיינים/אנשי מכירות), חובה להפריד בין הנקודות באמצעות תו ירידת שורה כפול (\\n\\n) בין כל נקודה - אסור להחזיר את כל הנקודות כפסקה אחת רציפה ללא הפרדה.",
+    },
     basedOn: {
       type: "array",
       items: { type: "string" },
@@ -145,7 +149,11 @@ export const REPORT_SCHEMA: Anthropic.Tool.InputSchema = {
   type: "object",
   properties: {
     periodLabel: { type: "string", description: "תיאור קצר של תקופת הדוח בעברית" },
-    summary: { type: "string", description: "סיכום ביצועים ניהולי מלא, פסקה אחת עד שתיים" },
+    summary: {
+      type: "string",
+      description:
+        "סיכום ביצועים ניהולי מלא, פסקה אחת עד שתיים. אם יש יותר מפסקה אחת, יש להפריד ביניהן באמצעות \\n\\n.",
+    },
     insights: { type: "array", items: { type: "string" }, description: "תובנות מרכזיות" },
     anomalies: { type: "array", items: { type: "string" } },
     recommendations: { type: "array", items: { type: "string" } },

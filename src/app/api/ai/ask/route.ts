@@ -33,6 +33,7 @@ export async function POST(request: Request) {
   }
 
   if (!isValidAskResult(result)) {
+    console.error("Invalid ask result shape:", JSON.stringify(result));
     return NextResponse.json(
       { error: "תשובת ה-AI התקבלה בפורמט לא תקין, נסו שוב" },
       { status: 502 }

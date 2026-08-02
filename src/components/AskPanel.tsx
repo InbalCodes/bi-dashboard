@@ -90,7 +90,7 @@ export default function AskPanel({ queryString }: { queryString: string }) {
             {entry.error && <p className="text-sm text-red-600">{entry.error}</p>}
             {entry.result && (
               <>
-                <p className="text-sm leading-relaxed">{entry.result.answer}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{entry.result.answer}</p>
                 {!entry.result.hasEnoughData && (
                   <p className="text-xs text-amber-600 mt-2">
                     ⚠ אין מספיק נתונים בסינון הנוכחי כדי לענות על כך בביטחון מלא
