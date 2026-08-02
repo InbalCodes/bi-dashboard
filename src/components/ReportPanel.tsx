@@ -22,6 +22,7 @@ interface Digest {
   revenueVsSpendOverTime: ChartsData["revenueVsSpendOverTime"];
   leadsByChannel: ChartsData["leadsByChannel"];
   conversionByCampaign: ChartsData["conversionByCampaign"];
+  revenueBySalesperson: ChartsData["revenueBySalesperson"];
   funnel: ChartsData["funnel"];
 }
 
@@ -52,6 +53,7 @@ function digestToCharts(digest: Digest): ChartsData {
     revenueVsSpendOverTime: digest.revenueVsSpendOverTime,
     leadsByChannel: digest.leadsByChannel,
     conversionByCampaign: digest.conversionByCampaign,
+    revenueBySalesperson: digest.revenueBySalesperson,
     funnel: digest.funnel,
   };
 }

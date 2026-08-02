@@ -11,7 +11,10 @@ function getClient(): GoogleGenAI {
   return client;
 }
 
-const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "imagen-4.0-generate-001";
+// generateImages()/Imagen is deprecated by Google in favor of generateContent
+// with an image-capable Gemini model (see
+// https://ai.google.dev/gemini-api/docs/deprecations#imagen-models).
+const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
 
 export interface GeneratedImage {
   base64: string;
@@ -20,22 +23,18 @@ export interface GeneratedImage {
 
 export async function generateImage(prompt: string): Promise<GeneratedImage> {
   const genAI = getClient();
-  const response = await genAI.models.generateImages({
+  const response = await genAI.models.generateContent({
     model: IMAGE_MODEL,
-    prompt,
-    config: {
-      numberOfImages: 1,
-      aspectRatio: "16:9",
-    },
+    contents: prompt,
   });
 
-  const image = response.generatedImages?.[0]?.image;
-  if (!image?.imageBytes) {
+  const base64 = response.data;
+  if (!base64) {
     throw new Error("שירות יצירת התמונות לא החזיר תמונה");
   }
 
-  return {
-    base64: image.imageBytes,
-    mimeType: image.mimeType || "image/png",
-  };
+  const inlinePart = response.candidates?.[0]?.content?.parts?.find((part) => part.inlineData);
+  const mimeType = inlinePart?.inlineData?.mimeType || "image/png";
+
+  return { base64, mimeType };
 }

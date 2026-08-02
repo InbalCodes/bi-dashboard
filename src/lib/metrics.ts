@@ -83,6 +83,7 @@ export interface ChartsData {
   revenueVsSpendOverTime: { date: string; revenue: number; spent: number }[];
   leadsByChannel: { channel: string; leads: number }[];
   conversionByCampaign: { campaign: string; conversionRate: number | null }[];
+  revenueBySalesperson: { salesperson: string; revenue: number; leads: number; deals: number; conversionRate: number | null }[];
   funnel: { leads: number; meetings: number; deals: number };
 }
 
@@ -110,6 +111,13 @@ export async function getCharts(filters: DashboardFilters): Promise<ChartsData> 
     GROUP BY campaign_name
     ORDER BY campaign_name ASC
   `;
+  const bySalespersonQuery = `
+    SELECT salesperson, SUM(revenue)::float AS revenue, SUM(leads)::float AS leads, SUM(deals)::float AS deals
+    FROM marketing_rows
+    ${where}
+    GROUP BY salesperson
+    ORDER BY revenue DESC
+  `;
   const funnelQuery = `
     SELECT
       COALESCE(SUM(leads), 0)::float AS leads,
@@ -119,10 +127,11 @@ export async function getCharts(filters: DashboardFilters): Promise<ChartsData> 
     ${where}
   `;
 
-  const [overTimeRows, byChannelRows, byCampaignRows, funnelRows] = await Promise.all([
+  const [overTimeRows, byChannelRows, byCampaignRows, bySalespersonRows, funnelRows] = await Promise.all([
     sql.query(overTimeQuery, params),
     sql.query(byChannelQuery, params),
     sql.query(byCampaignQuery, params),
+    sql.query(bySalespersonQuery, params),
     sql.query(funnelQuery, params),
   ]);
 
@@ -141,6 +150,15 @@ export async function getCharts(filters: DashboardFilters): Promise<ChartsData> 
         conversionRate: divideOrNull(r.deals * 100, r.leads),
       })
     ),
+    revenueBySalesperson: (
+      bySalespersonRows as { salesperson: string; revenue: number; leads: number; deals: number }[]
+    ).map((r) => ({
+      salesperson: r.salesperson,
+      revenue: r.revenue,
+      leads: r.leads,
+      deals: r.deals,
+      conversionRate: divideOrNull(r.deals * 100, r.leads),
+    })),
     funnel,
   };
 }

@@ -24,7 +24,11 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
       <h3 className="text-sm font-medium mb-3">{title}</h3>
-      <div className="h-72">{children}</div>
+      {/* Recharts doesn't support RTL layout natively; forcing ltr here avoids
+          axis labels and bars overlapping when the page direction is rtl. */}
+      <div className="h-72" dir="ltr">
+        {children}
+      </div>
     </div>
   );
 }
@@ -72,6 +76,18 @@ export default function DashboardCharts({ charts }: { charts: ChartsData }) {
             <YAxis type="category" dataKey="campaign" tick={{ fontSize: 10 }} width={140} />
             <Tooltip />
             <Bar dataKey="conversionRate" name="אחוז המרה" fill={COLORS[4]} radius={[0, 4, 4, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard title="הכנסות לפי איש מכירות">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={charts.revenueBySalesperson}>
+            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+            <XAxis dataKey="salesperson" tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} />
+            <Tooltip />
+            <Bar dataKey="revenue" name="הכנסות" fill={COLORS[5]} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>
