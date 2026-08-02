@@ -23,6 +23,8 @@ interface Digest {
   leadsByChannel: ChartsData["leadsByChannel"];
   conversionByCampaign: ChartsData["conversionByCampaign"];
   revenueBySalesperson: ChartsData["revenueBySalesperson"];
+  performanceByProduct: ChartsData["performanceByProduct"];
+  budgetVsSpentByMonth: ChartsData["budgetVsSpentByMonth"];
   funnel: ChartsData["funnel"];
 }
 
@@ -54,6 +56,8 @@ function digestToCharts(digest: Digest): ChartsData {
     leadsByChannel: digest.leadsByChannel,
     conversionByCampaign: digest.conversionByCampaign,
     revenueBySalesperson: digest.revenueBySalesperson,
+    performanceByProduct: digest.performanceByProduct,
+    budgetVsSpentByMonth: digest.budgetVsSpentByMonth,
     funnel: digest.funnel,
   };
 }

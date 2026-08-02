@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const LINKS = [
-  { href: "/dashboard", label: "דשבורד" },
+  { href: "/dashboard", label: "מרכז הבקרה" },
   { href: "/insights", label: "תובנות AI" },
   { href: "/ask", label: "שאלות על הנתונים" },
-  { href: "/report", label: "דוח" },
+  { href: "/report", label: "דוח ניהולי חכם" },
   { href: "/settings", label: "הגדרות נתונים" },
 ];
 

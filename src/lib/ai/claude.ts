@@ -35,7 +35,7 @@ export async function runStructured<T>(opts: {
   const anthropic = getClient();
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 8192,
     system: opts.system,
     messages: [{ role: "user", content: opts.user }],
     tools: [
@@ -47,6 +47,13 @@ export async function runStructured<T>(opts: {
     ],
     tool_choice: { type: "tool", name: opts.toolName },
   });
+
+  if (response.stop_reason === "max_tokens") {
+    // The tool_use JSON was cut off mid-way (e.g. a very long free-text
+    // answer ate the token budget) - input would be incomplete/malformed,
+    // so fail loudly here instead of returning a partial object to the client.
+    throw new Error("תשובת ה-AI נקטעה (ארוכה מדי) - נסו לצמצם את טווח הנתונים או לשאול שאלה ממוקדת יותר");
+  }
 
   const toolUse = response.content.find((block) => block.type === "tool_use");
   if (!toolUse || toolUse.type !== "tool_use") {
@@ -61,7 +68,7 @@ export async function runText(opts: { system: string; user: string }): Promise<s
   const anthropic = getClient();
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 512,
+    max_tokens: 800,
     system: opts.system,
     messages: [{ role: "user", content: opts.user }],
   });

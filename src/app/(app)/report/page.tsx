@@ -19,7 +19,7 @@ export default async function ReportPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-4 print:hidden">דוח ניהולי</h1>
+      <h1 className="text-2xl font-semibold mb-4 print:hidden">דוח ניהולי חכם</h1>
       <div className="print:hidden">
         <FilterBar options={options} />
       </div>

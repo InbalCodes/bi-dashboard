@@ -92,6 +92,32 @@ export default function DashboardCharts({ charts }: { charts: ChartsData }) {
         </ResponsiveContainer>
       </ChartCard>
 
+      <ChartCard title="ביצועים לפי מוצר או שירות">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={charts.performanceByProduct}>
+            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+            <XAxis dataKey="product" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+            <YAxis tick={{ fontSize: 11 }} />
+            <Tooltip />
+            <Bar dataKey="revenue" name="הכנסות" fill={COLORS[1]} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard title="תקציב מול הוצאה בפועל לפי חודש">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={charts.budgetVsSpentByMonth}>
+            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+            <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="budget" name="תקציב מתוכנן" fill={COLORS[3]} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="spent" name="הוצאה בפועל" fill={COLORS[0]} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
       <ChartCard title="משפך מכירות: לידים, פגישות ועסקאות">
         <ResponsiveContainer width="100%" height="100%">
           <FunnelChart>

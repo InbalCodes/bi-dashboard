@@ -19,6 +19,8 @@ export interface Digest {
   leadsByChannel: { channel: string; leads: number }[];
   conversionByCampaign: { campaign: string; conversionRate: number | null }[];
   revenueBySalesperson: { salesperson: string; revenue: number; leads: number; deals: number; conversionRate: number | null }[];
+  performanceByProduct: { product: string; revenue: number; leads: number; deals: number }[];
+  budgetVsSpentByMonth: { month: string; budget: number | null; spent: number }[];
   funnel: { leads: number; meetings: number; deals: number };
   /** Entities that actually appear in the currently filtered data — the
    * model's output is validated against this list, never against the full DB. */
@@ -53,6 +55,8 @@ export async function buildDigest(filters: DashboardFilters): Promise<Digest> {
     leadsByChannel: charts.leadsByChannel,
     conversionByCampaign: charts.conversionByCampaign,
     revenueBySalesperson: charts.revenueBySalesperson,
+    performanceByProduct: charts.performanceByProduct,
+    budgetVsSpentByMonth: charts.budgetVsSpentByMonth,
     funnel: charts.funnel,
     knownEntities,
   };

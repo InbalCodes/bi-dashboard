@@ -29,7 +29,7 @@ export default async function DashboardPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-4">דשבורד</h1>
+      <h1 className="text-2xl font-semibold mb-4">מרכז הבקרה השיווקי</h1>
       <FilterBar options={options} />
       {!previousFilters && (
         <p className="text-xs text-slate-400 mb-3">

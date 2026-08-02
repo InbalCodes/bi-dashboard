@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { parseFilters } from "@/lib/filters";
 import { buildDigest, filterToKnownEntities } from "@/lib/ai/digest";
 import { runStructured, ANTI_HALLUCINATION_SYSTEM_PROMPT } from "@/lib/ai/claude";
-import { ANALYSIS_SCHEMA, type AnalysisResult } from "@/lib/ai/schemas";
+import { ANALYSIS_SCHEMA, isValidAnalysisResult, type AnalysisResult } from "@/lib/ai/schemas";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +31,13 @@ export async function POST(request: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `ניתוח ה-AI נכשל: ${message}` }, { status: 502 });
+  }
+
+  if (!isValidAnalysisResult(result)) {
+    return NextResponse.json(
+      { error: "תשובת ה-AI התקבלה בפורמט לא תקין, נסו שוב" },
+      { status: 502 }
+    );
   }
 
   const campaignsCheck = filterToKnownEntities(digest, result.standoutCampaigns);

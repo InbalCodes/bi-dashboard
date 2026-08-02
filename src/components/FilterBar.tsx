@@ -45,7 +45,7 @@ export default function FilterBar({ options }: { options: FilterOptions }) {
           type="date"
           value={searchParams.get("dateFrom") ?? ""}
           onChange={(e) => updateParam("dateFrom", e.target.value)}
-          className="rounded-md border border-slate-300 dark:border-slate-700 bg-transparent px-2 py-1.5 text-sm"
+          className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm"
         />
       </div>
       <div>
@@ -54,7 +54,7 @@ export default function FilterBar({ options }: { options: FilterOptions }) {
           type="date"
           value={searchParams.get("dateTo") ?? ""}
           onChange={(e) => updateParam("dateTo", e.target.value)}
-          className="rounded-md border border-slate-300 dark:border-slate-700 bg-transparent px-2 py-1.5 text-sm"
+          className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm"
         />
       </div>
       {FIELDS.map((field) => (
@@ -63,7 +63,7 @@ export default function FilterBar({ options }: { options: FilterOptions }) {
           <select
             value={searchParams.get(field.key) ?? ""}
             onChange={(e) => updateParam(field.key, e.target.value)}
-            className="rounded-md border border-slate-300 dark:border-slate-700 bg-transparent px-2 py-1.5 text-sm min-w-[9rem]"
+            className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm min-w-[9rem]"
           >
             <option value="">הכל</option>
             {optionsByField[field.key].map((value) => (

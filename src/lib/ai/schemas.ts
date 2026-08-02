@@ -83,10 +83,37 @@ export const ANALYSIS_SCHEMA: Anthropic.Tool.InputSchema = {
   ],
 };
 
+/** Tool-use schemas describe the expected shape to the model, but nothing
+ * guarantees compliance in every response (a very long free-text field can
+ * eat the token budget and truncate the JSON before later fields are
+ * written). Validate before trusting the result, so a malformed response
+ * fails with a clear error instead of crashing the client on `.length`/`.map`
+ * over an undefined field. */
+export function isValidAnalysisResult(value: unknown): value is AnalysisResult {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Partial<AnalysisResult>;
+  return (
+    typeof v.summary === "string" &&
+    Array.isArray(v.insights) &&
+    Array.isArray(v.trends) &&
+    Array.isArray(v.anomalies) &&
+    Array.isArray(v.standoutCampaigns) &&
+    Array.isArray(v.standoutSalespeople) &&
+    Array.isArray(v.recommendations) &&
+    Array.isArray(v.pointsToInvestigate)
+  );
+}
+
 export interface AskResult {
   answer: string;
   basedOn: string[];
   hasEnoughData: boolean;
+}
+
+export function isValidAskResult(value: unknown): value is AskResult {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Partial<AskResult>;
+  return typeof v.answer === "string" && Array.isArray(v.basedOn) && typeof v.hasEnoughData === "boolean";
 }
 
 export const ASK_SCHEMA: Anthropic.Tool.InputSchema = {
@@ -125,3 +152,15 @@ export const REPORT_SCHEMA: Anthropic.Tool.InputSchema = {
   },
   required: ["periodLabel", "summary", "insights", "anomalies", "recommendations"],
 };
+
+export function isValidReportResult(value: unknown): value is ReportResult {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Partial<ReportResult>;
+  return (
+    typeof v.periodLabel === "string" &&
+    typeof v.summary === "string" &&
+    Array.isArray(v.insights) &&
+    Array.isArray(v.anomalies) &&
+    Array.isArray(v.recommendations)
+  );
+}

@@ -84,6 +84,11 @@ export interface ChartsData {
   leadsByChannel: { channel: string; leads: number }[];
   conversionByCampaign: { campaign: string; conversionRate: number | null }[];
   revenueBySalesperson: { salesperson: string; revenue: number; leads: number; deals: number; conversionRate: number | null }[];
+  performanceByProduct: { product: string; revenue: number; leads: number; deals: number }[];
+  /** Budget vs. actual spend by month. Budget is intentionally missing on
+   * some rows (per the data dictionary) - SUM() ignores those NULLs rather
+   * than treating them as zero, so this compares like-for-like. */
+  budgetVsSpentByMonth: { month: string; budget: number | null; spent: number }[];
   funnel: { leads: number; meetings: number; deals: number };
 }
 
@@ -118,6 +123,23 @@ export async function getCharts(filters: DashboardFilters): Promise<ChartsData> 
     GROUP BY salesperson
     ORDER BY revenue DESC
   `;
+  const byProductQuery = `
+    SELECT product, SUM(revenue)::float AS revenue, SUM(leads)::float AS leads, SUM(deals)::float AS deals
+    FROM marketing_rows
+    ${where}
+    GROUP BY product
+    ORDER BY revenue DESC
+  `;
+  const budgetVsSpentQuery = `
+    SELECT
+      to_char(date_trunc('month', row_date), 'YYYY-MM') AS month,
+      SUM(budget)::float AS budget,
+      SUM(spent)::float AS spent
+    FROM marketing_rows
+    ${where}
+    GROUP BY 1
+    ORDER BY 1 ASC
+  `;
   const funnelQuery = `
     SELECT
       COALESCE(SUM(leads), 0)::float AS leads,
@@ -127,13 +149,16 @@ export async function getCharts(filters: DashboardFilters): Promise<ChartsData> 
     ${where}
   `;
 
-  const [overTimeRows, byChannelRows, byCampaignRows, bySalespersonRows, funnelRows] = await Promise.all([
-    sql.query(overTimeQuery, params),
-    sql.query(byChannelQuery, params),
-    sql.query(byCampaignQuery, params),
-    sql.query(bySalespersonQuery, params),
-    sql.query(funnelQuery, params),
-  ]);
+  const [overTimeRows, byChannelRows, byCampaignRows, bySalespersonRows, byProductRows, budgetVsSpentRows, funnelRows] =
+    await Promise.all([
+      sql.query(overTimeQuery, params),
+      sql.query(byChannelQuery, params),
+      sql.query(byCampaignQuery, params),
+      sql.query(bySalespersonQuery, params),
+      sql.query(byProductQuery, params),
+      sql.query(budgetVsSpentQuery, params),
+      sql.query(funnelQuery, params),
+    ]);
 
   const funnel = (funnelRows[0] as { leads: number; meetings: number; deals: number } | undefined) ?? {
     leads: 0,
@@ -159,6 +184,8 @@ export async function getCharts(filters: DashboardFilters): Promise<ChartsData> 
       deals: r.deals,
       conversionRate: divideOrNull(r.deals * 100, r.leads),
     })),
+    performanceByProduct: byProductRows as { product: string; revenue: number; leads: number; deals: number }[],
+    budgetVsSpentByMonth: budgetVsSpentRows as { month: string; budget: number | null; spent: number }[],
     funnel,
   };
 }

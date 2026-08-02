@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { parseFilters } from "@/lib/filters";
 import { buildDigest } from "@/lib/ai/digest";
 import { runStructured, ANTI_HALLUCINATION_SYSTEM_PROMPT } from "@/lib/ai/claude";
-import { REPORT_SCHEMA, type ReportResult } from "@/lib/ai/schemas";
+import { REPORT_SCHEMA, isValidReportResult, type ReportResult } from "@/lib/ai/schemas";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +27,13 @@ export async function POST(request: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `יצירת הדוח נכשלה: ${message}` }, { status: 502 });
+  }
+
+  if (!isValidReportResult(report)) {
+    return NextResponse.json(
+      { error: "תשובת ה-AI התקבלה בפורמט לא תקין, נסו שוב" },
+      { status: 502 }
+    );
   }
 
   return NextResponse.json({ report, digest });

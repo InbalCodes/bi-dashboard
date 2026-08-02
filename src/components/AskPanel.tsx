@@ -96,9 +96,9 @@ export default function AskPanel({ queryString }: { queryString: string }) {
                     ⚠ אין מספיק נתונים בסינון הנוכחי כדי לענות על כך בביטחון מלא
                   </p>
                 )}
-                {entry.result.basedOn.length > 0 && (
+                {(entry.result.basedOn ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {entry.result.basedOn.map((b, j) => (
+                    {(entry.result.basedOn ?? []).map((b, j) => (
                       <span key={j} className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 rounded px-1.5 py-0.5">
                         מבוסס על: {b}
                       </span>
