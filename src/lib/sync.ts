@@ -1,3 +1,4 @@
+import "server-only";
 import { sql } from "./db";
 import { fetchSheetRows } from "./sheets";
 import { parseSheetRows, type ParsedRow } from "./parse";

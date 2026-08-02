@@ -1,3 +1,4 @@
+import "server-only";
 import { sql } from "./db";
 import { buildWhereClause, type DashboardFilters } from "./filters";
 

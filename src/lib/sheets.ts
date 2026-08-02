@@ -1,3 +1,4 @@
+import "server-only";
 import { google } from "googleapis";
 
 export class SheetsConnectionError extends Error {}

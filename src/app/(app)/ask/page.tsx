@@ -1,6 +1,7 @@
 import FilterBar from "@/components/FilterBar";
 import AskPanel from "@/components/AskPanel";
-import { getFilterOptions } from "@/lib/metrics";
+import { getSession } from "@/lib/auth";
+import { getFilterOptionsForSession } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,9 @@ export default async function AskPage({
     if (typeof value === "string") urlParams.set(key, value);
   }
 
-  const options = await getFilterOptions();
+  const session = await getSession();
+  const lockedSalesperson = session?.role === "salesperson" ? session.salesperson ?? undefined : undefined;
+  const options = await getFilterOptionsForSession();
 
   return (
     <div>
@@ -23,7 +26,7 @@ export default async function AskPage({
       <p className="text-sm text-slate-500 mb-4">
         שאלו שאלה בשפה חופשית על הנתונים המסוננים.
       </p>
-      <FilterBar options={options} />
+      <FilterBar options={options} lockedSalesperson={lockedSalesperson} />
       <AskPanel queryString={urlParams.toString()} />
     </div>
   );

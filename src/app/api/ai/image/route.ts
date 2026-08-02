@@ -3,6 +3,7 @@ import { parseFilters } from "@/lib/filters";
 import { buildDigest } from "@/lib/ai/digest";
 import { runText } from "@/lib/ai/claude";
 import { generateImage } from "@/lib/ai/gemini";
+import { getScopedFilters } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ Return ONLY the final image-generation prompt text, nothing else - no preamble, 
 
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
-  const filters = parseFilters(searchParams);
+  const filters = await getScopedFilters(parseFilters(searchParams));
 
   const body = await request.json().catch(() => ({}));
   const type = typeof body.type === "string" ? body.type : "summary";

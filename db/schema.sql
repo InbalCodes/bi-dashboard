@@ -34,3 +34,15 @@ CREATE TABLE IF NOT EXISTS sync_log (
   status TEXT NOT NULL,
   error_message TEXT
 );
+
+-- Manager-configured threshold alert rules ("bonus": שליחת התראה כאשר מדד
+-- חורג מערך מסוים). Evaluated against the currently displayed (filtered)
+-- metrics on the dashboard.
+CREATE TABLE IF NOT EXISTS alert_rules (
+  id SERIAL PRIMARY KEY,
+  metric TEXT NOT NULL,      -- totalSpent | totalRevenue | roi | conversionRate | avgCostPerLead | avgCostPerDeal
+  operator TEXT NOT NULL,    -- 'gt' | 'lt'
+  threshold DOUBLE PRECISION NOT NULL,
+  label TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

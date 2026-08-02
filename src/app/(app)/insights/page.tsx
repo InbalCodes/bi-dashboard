@@ -1,6 +1,7 @@
 import FilterBar from "@/components/FilterBar";
 import AnalyzePanel from "@/components/AnalyzePanel";
-import { getFilterOptions } from "@/lib/metrics";
+import { getSession } from "@/lib/auth";
+import { getFilterOptionsForSession } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,9 @@ export default async function InsightsPage({
     if (typeof value === "string") urlParams.set(key, value);
   }
 
-  const options = await getFilterOptions();
+  const session = await getSession();
+  const lockedSalesperson = session?.role === "salesperson" ? session.salesperson ?? undefined : undefined;
+  const options = await getFilterOptionsForSession();
 
   return (
     <div>
@@ -23,7 +26,7 @@ export default async function InsightsPage({
       <p className="text-sm text-slate-500 mb-4">
         בחרו סינון ולחצו על &quot;נתח את הנתונים&quot; כדי לקבל ניתוח מבוסס-AI על הנתונים המסוננים בלבד.
       </p>
-      <FilterBar options={options} />
+      <FilterBar options={options} lockedSalesperson={lockedSalesperson} />
       <AnalyzePanel queryString={urlParams.toString()} />
     </div>
   );

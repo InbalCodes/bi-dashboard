@@ -3,12 +3,13 @@ import { parseFilters } from "@/lib/filters";
 import { buildDigest } from "@/lib/ai/digest";
 import { runStructured, ANTI_HALLUCINATION_SYSTEM_PROMPT } from "@/lib/ai/claude";
 import { REPORT_SCHEMA, isValidReportResult, type ReportResult } from "@/lib/ai/schemas";
+import { getScopedFilters } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
-  const filters = parseFilters(searchParams);
+  const filters = await getScopedFilters(parseFilters(searchParams));
   const digest = await buildDigest(filters);
 
   if (digest.totals.leads === 0 && digest.totals.spent === 0) {

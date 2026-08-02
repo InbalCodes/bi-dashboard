@@ -14,7 +14,16 @@ const FIELDS: { key: string; label: string }[] = [
 const CONTROL_CLASS =
   "w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm";
 
-export default function FilterBar({ options }: { options: FilterOptions }) {
+export default function FilterBar({
+  options,
+  lockedSalesperson,
+}: {
+  options: FilterOptions;
+  /** When set (salesperson role), the "איש מכירות" filter is fixed to this
+   * name and hidden from the UI - the server enforces this scope regardless
+   * of what's in the URL, this just keeps the UI honest about it. */
+  lockedSalesperson?: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -39,6 +48,7 @@ export default function FilterBar({ options }: { options: FilterOptions }) {
   };
 
   const hasActiveFilters = Array.from(searchParams.keys()).length > 0;
+  const visibleFields = lockedSalesperson ? FIELDS.filter((f) => f.key !== "salesperson") : FIELDS;
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-6">
@@ -61,7 +71,15 @@ export default function FilterBar({ options }: { options: FilterOptions }) {
             className={CONTROL_CLASS}
           />
         </div>
-        {FIELDS.map((field) => (
+        {lockedSalesperson && (
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">איש מכירות</label>
+            <div className={`${CONTROL_CLASS} bg-slate-100 dark:bg-slate-700 truncate`} title={lockedSalesperson}>
+              {lockedSalesperson}
+            </div>
+          </div>
+        )}
+        {visibleFields.map((field) => (
           <div key={field.key}>
             <label className="block text-xs text-slate-500 mb-1">{field.label}</label>
             <select

@@ -3,12 +3,13 @@ import { parseFilters } from "@/lib/filters";
 import { buildDigest } from "@/lib/ai/digest";
 import { runStructured, ANTI_HALLUCINATION_SYSTEM_PROMPT } from "@/lib/ai/claude";
 import { ASK_SCHEMA, isValidAskResult, type AskResult } from "@/lib/ai/schemas";
+import { getScopedFilters } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
-  const filters = parseFilters(searchParams);
+  const filters = await getScopedFilters(parseFilters(searchParams));
 
   const body = await request.json().catch(() => ({}));
   const question = typeof body.question === "string" ? body.question.trim() : "";

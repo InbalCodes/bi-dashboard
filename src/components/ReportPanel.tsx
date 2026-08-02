@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import KpiCards from "./KpiCards";
 import DashboardCharts from "./DashboardCharts";
 import type { Metrics, ChartsData } from "@/lib/metrics";
@@ -107,6 +107,8 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<ReportResult | null>(null);
   const [digest, setDigest] = useState<Digest | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const [imageLoading, setImageLoading] = useState<string | null>(null);
   const [images, setImages] = useState<Record<string, { url: string; prompt: string }>>({});
@@ -127,6 +129,52 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
       setError("שגיאת תקשורת עם השרת");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function exportPdf() {
+    if (!reportRef.current) return;
+    setPdfLoading(true);
+    setError(null);
+    try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas-pro"),
+        import("jspdf"),
+      ]);
+
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 1.5,
+        useCORS: true,
+      });
+
+      const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4", compress: true });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      // JPEG at 0.85 quality keeps the report legible while cutting the
+      // file from tens of MB (PNG) down to a few MB - this is a dashboard
+      // screenshot, not a photo, so some compression is imperceptible.
+      const imgData = canvas.toDataURL("image/jpeg", 0.85);
+
+      let heightLeft = imgHeight;
+      let position = 0;
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`report-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      setError("ייצוא ה-PDF נכשל");
+    } finally {
+      setPdfLoading(false);
     }
   }
 
@@ -171,10 +219,11 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
               ייצוא CSV
             </button>
             <button
-              onClick={() => window.print()}
-              className="rounded-md border border-slate-300 dark:border-slate-700 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+              onClick={exportPdf}
+              disabled={pdfLoading}
+              className="rounded-md border border-slate-300 dark:border-slate-700 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
             >
-              ייצוא PDF
+              {pdfLoading ? "מייצא PDF..." : "ייצוא PDF"}
             </button>
           </>
         )}
@@ -183,8 +232,9 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
       {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
       {report && digest && (
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium">תקופת הדוח: {report.periodLabel}</h2>
+        <>
+          <div ref={reportRef} className="space-y-6 bg-slate-50 dark:bg-slate-950 p-1">
+            <h2 className="text-lg font-medium">תקופת הדוח: {report.periodLabel}</h2>
 
           <KpiCards metrics={digestToMetrics(digest)} />
           <DashboardCharts charts={digestToCharts(digest)} />
@@ -220,6 +270,7 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
               </ul>
             </section>
           </div>
+        </div>
 
           <section className="print:hidden">
             <h3 className="text-sm font-medium text-slate-500 mb-3">יצירת תמונה באמצעות AI</h3>
@@ -249,7 +300,7 @@ export default function ReportPanel({ queryString }: { queryString: string }) {
               ))}
             </div>
           </section>
-        </div>
+        </>
       )}
     </div>
   );
