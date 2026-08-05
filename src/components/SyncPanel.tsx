@@ -38,9 +38,13 @@ export default function SyncPanel({
       if (!res.ok) {
         setResult({ ok: false, message: data.error ?? "הסנכרון נכשל" });
       } else {
+        const removedNote =
+          typeof data.rowsRemoved === "number" && data.rowsRemoved > 0
+            ? ` הוסרו ${data.rowsRemoved} שורות שנמחקו מהגיליון.`
+            : "";
         setResult({
           ok: true,
-          message: `סונכרנו ${data.rowsSynced} שורות בהצלחה.`,
+          message: `סונכרנו ${data.rowsSynced} שורות בהצלחה.${removedNote}`,
           skipped: data.skipped,
         });
         router.refresh();

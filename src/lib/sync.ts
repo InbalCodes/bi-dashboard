@@ -79,11 +79,26 @@ async function upsertBatch(batch: ParsedRow[]) {
 export interface SyncOutcome {
   status: "success" | "error";
   rowsSynced: number;
+  rowsRemoved: number;
   skipped: { rowNumber: number; reason: string }[];
   error?: string;
 }
 
-/** Fetches the sheet, upserts rows by row_id (no duplicates), and logs the outcome. */
+/** Deletes rows whose row_id is no longer present in the sheet, so the table
+ * stays a true mirror of the source instead of accumulating rows that were
+ * removed upstream. Guarded by requiring at least one current row_id, so a
+ * transient empty/failed read can never wipe the table. */
+async function pruneRemovedRows(currentRowIds: string[]): Promise<number> {
+  if (currentRowIds.length === 0) return 0;
+  const result = await sql.query(
+    `DELETE FROM marketing_rows WHERE row_id != ALL($1) RETURNING row_id`,
+    [currentRowIds]
+  );
+  return result.length;
+}
+
+/** Fetches the sheet, upserts rows by row_id (no duplicates), removes rows no
+ * longer present in the sheet, and logs the outcome. */
 export async function runSync(): Promise<SyncOutcome> {
   try {
     const raw = await fetchSheetRows();
@@ -93,12 +108,14 @@ export async function runSync(): Promise<SyncOutcome> {
       await upsertBatch(rows.slice(i, i + BATCH_SIZE));
     }
 
+    const rowsRemoved = await pruneRemovedRows(rows.map((r) => r.rowId));
+
     await sql`
       INSERT INTO sync_log (rows_synced, status, error_message)
       VALUES (${rows.length}, 'success', NULL)
     `;
 
-    return { status: "success", rowsSynced: rows.length, skipped };
+    return { status: "success", rowsSynced: rows.length, rowsRemoved, skipped };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     try {
@@ -109,7 +126,7 @@ export async function runSync(): Promise<SyncOutcome> {
     } catch {
       // If even the DB is unreachable, swallow — the caller still gets the error message.
     }
-    return { status: "error", rowsSynced: 0, skipped: [], error: message };
+    return { status: "error", rowsSynced: 0, rowsRemoved: 0, skipped: [], error: message };
   }
 }
 
