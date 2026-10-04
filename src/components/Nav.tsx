@@ -45,7 +45,7 @@ export default function Nav({ session }: { session: Session | null }) {
           })}
         </nav>
         <div className="flex items-center gap-3 shrink-0">
-          {session && (
+          {session ? (
             <>
               <span className="text-xs text-slate-400 hidden sm:inline">
                 {session.role === "manager" ? "מחובר/ת כמנהל/ת" : `מחובר/ת כאיש/אשת מכירות: ${session.salesperson}`}
@@ -57,6 +57,13 @@ export default function Nav({ session }: { session: Session | null }) {
                 התנתקות
               </button>
             </>
+          ) : (
+            <Link
+              href={`/login?next=${encodeURIComponent(pathname)}`}
+              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            >
+              התחברות
+            </Link>
           )}
         </div>
       </div>
