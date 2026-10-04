@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "מערכת BI",
+  title: "InsightFlow",
   description: "דשבורד שיווק ומכירות מבוסס AI",
 };
 

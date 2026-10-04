@@ -39,7 +39,7 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4" dir="rtl">
       <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
-        <h1 className="text-xl font-semibold mb-1">מערכת BI</h1>
+        <h1 className="text-xl font-semibold mb-1">InsightFlow</h1>
         <p className="text-sm text-slate-500 mb-6">התחברות למשתמש דמו</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

@@ -17,7 +17,7 @@ const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 // only a structured numeric digest of the currently filtered data (never raw
 // rows, never free text) and must answer through a forced tool call, so its
 // output always matches our schema instead of loosely-parsed prose.
-export const ANTI_HALLUCINATION_SYSTEM_PROMPT = `אתה עוזר אנליטי במערכת BI לשיווק ומכירות.
+export const ANTI_HALLUCINATION_SYSTEM_PROMPT = `אתה עוזר אנליטי ב-InsightFlow לשיווק ומכירות.
 קיבלת בהודעת המשתמש אך ורק סיכום נתונים מספרי (JSON) שחושב בשרת ישירות מתוך הנתונים האמיתיים המוצגים כרגע במערכת (לאחר הפעלת המסננים שהמשתמש בחר).
 כללים מחייבים:
 1. כל טענה, מספר, אחוז או מגמה בתשובתך חייבים להתבסס אך ורק על הערכים שמופיעים ב-JSON המצורף. אסור לחשב, להעריך או "לנחש" מספרים שאינם נגזרים ישירות ממנו.
