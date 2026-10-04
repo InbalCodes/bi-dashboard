@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "מערכת BI - STSICONIC",
+  title: "מערכת BI",
   description: "דשבורד שיווק ומכירות מבוסס AI",
 };
 
