@@ -46,16 +46,18 @@ export default function Nav({ session }: { session: Session | null }) {
         </nav>
         <div className="flex items-center gap-3 shrink-0">
           {session && (
-            <span className="text-xs text-slate-400 hidden sm:inline">
-              {session.role === "manager" ? "מחובר/ת כמנהל/ת" : `מחובר/ת כאיש/אשת מכירות: ${session.salesperson}`}
-            </span>
+            <>
+              <span className="text-xs text-slate-400 hidden sm:inline">
+                {session.role === "manager" ? "מחובר/ת כמנהל/ת" : `מחובר/ת כאיש/אשת מכירות: ${session.salesperson}`}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap"
+              >
+                התנתקות
+              </button>
+            </>
           )}
-          <button
-            onClick={handleLogout}
-            className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap"
-          >
-            התנתקות
-          </button>
         </div>
       </div>
     </header>
