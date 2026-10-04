@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 import { SESSION_COOKIE_NAME } from "@/lib/auth";
+import { canAccessWithoutLogin } from "@/lib/public-preview";
 
 const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/cron"];
 
@@ -16,7 +17,7 @@ function matchesAny(pathname: string, prefixes: string[]) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (matchesAny(pathname, PUBLIC_PATHS)) {
+  if (matchesAny(pathname, PUBLIC_PATHS) || canAccessWithoutLogin(pathname)) {
     return NextResponse.next();
   }
 

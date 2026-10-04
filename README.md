@@ -122,6 +122,7 @@ npm run dev       # http://localhost:3000
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | אימייל ה-Service Account | Google Cloud Console → IAM |
 | `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | המפתח הפרטי (JSON key) | Google Cloud Console — יש לשתף את הגיליון עם האימייל הזה כ-Viewer |
 | `GOOGLE_SHEETS_RANGE` | שם/טווח הגיליון (ברירת מחדל: `נתונים`) | אופציונלי |
+| `PUBLIC_PREVIEW` | מאפשר צפייה בכרטיסי לוח הבקרה/AI ללא התחברות, אך שומר על דפים מנהליים מוגנים | `true` / `false` |
 | `ANTHROPIC_API_KEY` | מפתח Claude | console.anthropic.com |
 | `ANTHROPIC_MODEL` | דגם Claude (ברירת מחדל: `claude-sonnet-5`) | אופציונלי |
 | `GEMINI_API_KEY` | מפתח Google AI (Gemini/Imagen) | aistudio.google.com |
